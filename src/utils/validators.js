@@ -8,3 +8,8 @@ export const validatePassword = (password) => {
   return password.length >= 6;
 };
 
+export const validatePhone = (phone) => {
+  const re = /^\d{3}-\d{3}-\d{4}$/;
+  return re.test(String(phone));
+};
+

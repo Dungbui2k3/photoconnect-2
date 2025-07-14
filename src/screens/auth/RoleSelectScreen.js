@@ -6,6 +6,7 @@ import { theme } from '../../theme/theme';
 import Button from '../../components/shared/Button';
 import Input from '../../components/shared/Input';
 import { useAuth } from '../../hooks/useAuth';
+import { validatePhone } from '../../utils/validators';
 
 const RoleSelectScreen = () => {
   const { user, setUserProfile } = useAuth();
@@ -13,9 +14,28 @@ const RoleSelectScreen = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const handlePhoneNumberChange = (text) => {
+    const cleaned = text.replace(/\D/g, '');
+    let formatted = '';
+    if (cleaned.length > 0) {
+      formatted = cleaned.substring(0, 3);
+    }
+    if (cleaned.length > 3) {
+      formatted += '-' + cleaned.substring(3, 6);
+    }
+    if (cleaned.length > 6) {
+      formatted += '-' + cleaned.substring(6, 10);
+    }
+    setPhoneNumber(formatted);
+  };
+
   const handleSelectRole = async (role) => {
     if (!name || !phoneNumber) {
       Alert.alert('Missing Fields', 'Please enter your name and phone number.');
+      return;
+    }
+    if (!validatePhone(phoneNumber)) {
+      Alert.alert('Invalid Phone Number', 'Please enter a valid phone number in the format XXX-XXX-XXXX.');
       return;
     }
     if (!user || !user.uid || !user.email) {
@@ -58,8 +78,9 @@ const RoleSelectScreen = () => {
         label="Phone Number"
         placeholder="e.g., 123-456-7890"
         value={phoneNumber}
-        onChangeText={setPhoneNumber}
+        onChangeText={handlePhoneNumberChange}
         keyboardType="phone-pad"
+        maxLength={12}
       />
 
       <View style={styles.buttonContainer}>
